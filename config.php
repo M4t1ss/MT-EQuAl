@@ -1,4 +1,4 @@
-<?php 
+﻿<?php 
 /*
 MT-EQuAl: a Toolkit for Human Assessment of Machine Translation Output
 
@@ -17,7 +17,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-session_start();
 include("initdb.conf");
 
 			  

@@ -1,4 +1,5 @@
 <?php
+session_start();
 header("Content-type: text/html; charset=utf-8");
 /*
 MT-EQuAl: a Toolkit for Human Assessment of Machine Translation Output

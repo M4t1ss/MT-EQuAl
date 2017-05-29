@@ -415,7 +415,10 @@ if (count($alreadyUsedValues) == 0 && $taskinfo['type'] != "docann") {
 <?php
 	#show the task ranges
 	if (isset($taskinfo["ranges"]) && $taskinfo["ranges"] != "[]" && $taskinfo["ranges"] != "") {
-		print "<script>showRanges($id,\"".$taskinfo["type"]."\",\"".$taskinfo["ranges"]."\");</script>";
+		// print "<script>showRanges($id,\"".$taskinfo["type"]."\",\"".$taskinfo["ranges"]."\");</script>";
+		print '<script>';
+		print 'showRanges('.$id.', "'.$taskinfo["type"].'", "'.str_replace("\"","'",str_replace("\\\\","",$taskinfo["ranges"])).'");';
+		print '</script>';
 	} else {
 		print "<script>addRange($id,'');</script>";
 	}

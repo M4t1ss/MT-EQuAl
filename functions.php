@@ -689,6 +689,8 @@ function getTaskID($taskname) {
 function rangesJson2Array($ranges) {
 	$array = array();
 	$dec = json_decode(stripslashes($ranges));
+	$goodRanges = str_replace("\\\\","",$ranges);
+	$dec = json_decode($goodRanges);
 	for($idx=0;$idx<count($dec);$idx++){
     	$obj = (Array) $dec[$idx];
     	$array[$obj["val"]] = array($obj["label"], $obj["color"]);

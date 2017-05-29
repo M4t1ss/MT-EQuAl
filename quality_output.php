@@ -1,11 +1,6 @@
-<html>
-<head>
-<link href="css/mtequal.css" rel="styleSheet" type="text/css">
-<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="js/mtequal.js"></script>
-	
 <?php
-header("Content-type: text/html; charset=utf-8");
+session_start();
+@header("Content-type: text/html; charset=utf-8");
 include("config.php");
 include("functions.php");
 
@@ -23,6 +18,11 @@ if (isset($monitoring) && $monitoring == 1) {
 	$monitoring=0;
 }
 ?>
+<html>
+<head>
+<link href="css/mtequal.css" rel="styleSheet" type="text/css">
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/mtequal.js"></script>
 </head>
 
 <body>
