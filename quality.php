@@ -1,4 +1,5 @@
 <?php
+session_start();
 header("Content-type: text/html; charset=utf-8");
 ?>
 
@@ -13,7 +14,7 @@ include("config.php");
 include("functions.php");
 
 if (isset($taskid)) {
-	if (isset($mysession) && $mysession["taskid"] != $taskid) {
+	if (isset($mysession)) {
 		$taskinfo = getTaskInfo($taskid);
 		$mysession["taskid"] = $taskid;
 		$mysession["tasknow"] = $taskinfo["name"];
@@ -35,10 +36,10 @@ if (!isset($mysession) || empty($mysession["status"]) || $mysession["taskid"]==0
 }
 
 $sentence_hash = getSentence($id, $taskid);
-if (!isset($sentence_hash["source"])) {
-	header("Location: index.php#".($id-1)); 
-	exit;
-}
+// if (!isset($sentence_hash["source"])) {
+	// header("Location: index.php#".($id-1)); 
+	// exit;
+// }
 ?>
 
 <style>
