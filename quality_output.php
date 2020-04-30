@@ -1,11 +1,6 @@
-<html>
-<head>
-<link href="css/mtequal.css" rel="styleSheet" type="text/css">
-<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="js/mtequal.js"></script>
-	
 <?php
-header("Content-type: text/html; charset=utf-8");
+session_start();
+@header("Content-type: text/html; charset=utf-8");
 include("config.php");
 include("functions.php");
 
@@ -23,6 +18,11 @@ if (isset($monitoring) && $monitoring == 1) {
 	$monitoring=0;
 }
 ?>
+<html>
+<head>
+<link href="css/mtequal.css" rel="styleSheet" type="text/css">
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="js/mtequal.js"></script>
 </head>
 
 <body>
@@ -32,7 +32,7 @@ $prevAndnextIDs = getPrevNext($taskid, $id);
 if (!isset($sentidx) && $sentidx != -1) {
  	$sentidx = $prevAndnextIDs[2];
 }
-print "<div class=donebottom>";
+print "<div class=donebottom style='bottom:20px;'>";
 $prevpage = "quality.php?id=".$prevAndnextIDs[0]."&taskid=$taskid&sentidx=".($sentidx-1);
 $nextpage = "quality.php?id=".$prevAndnextIDs[1]."&taskid=$taskid&sentidx=".($sentidx+1);
 print "<button id=prev name=prev onclick=\"javascript:next('$prevpage');\">&nbsp;« prev&nbsp;</button> &nbsp;";

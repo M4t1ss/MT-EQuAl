@@ -53,7 +53,7 @@ function check(id,target_id,user_id,val,checkid,totcheck,outid,totout) {
   		cache:false,
   		crossDomain: true,
   		success: function(response) {
-  			if (response != "1") {
+  			if (response.localeCompare("1") != 0) {
   				//alert("update.php?id="+id+"&targetid="+target_id+"&userid="+user_id+"&check="+val+"&action="+action);
   			 			
   				alert(response + " Sorry but an error occured saving data. Try again, please!");
