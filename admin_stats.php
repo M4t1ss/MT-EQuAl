@@ -111,7 +111,7 @@ if (isset($id)) {
 		
 		$outputText = "";
 		#$hashusers = getUserStats($mysession["userid"],$mysession["status"]);
-		while ($row = mysql_fetch_array($sentence_records)) {
+		while ($row = mysqli_fetch_array($sentence_records)) {
 			if ($userid != "" && ($userid != $row["user_id"] || $sentid != $row["output_id"] || $sourceid != $row["linkto"])) {
 				if (isDone($row["linkto"],$row["user_id"]) != 1) {
 					continue;
