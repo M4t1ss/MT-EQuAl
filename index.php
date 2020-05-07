@@ -89,9 +89,10 @@ if (!empty($login) && isset($password)) {
 						"sessionid" => session_id());
   } else {
 	$query = "SELECT id,status FROM user WHERE username='$login' AND password='$password' AND activated='Y'";
-	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_array($result);
+	// $result = safe_query($query);	
+	$result = mysqli_query($db, $query);	
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_array($result);
 		$mysession = array ("username"=>$login, 
 						"userid"=>$row["id"],
 						"status"=>$row["status"],

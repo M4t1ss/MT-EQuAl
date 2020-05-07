@@ -16,6 +16,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+include("config.php");
 
 # get user annotation statistics
 function getUserStats($user_id, $user_status) {
@@ -33,8 +34,8 @@ function getUserStats($user_id, $user_status) {
 		}
 		#$query = "select id,username,name,count(*),activated,status,refuser from user left join annotation on annotation.user_id=user.id group by id order by status,username;";
 		$result = safe_query($query);	
-		if (mysql_num_rows($result) > 0) {
-			while($row = mysql_fetch_row($result)) {
+		if (mysqli_num_rows($result) > 0) {
+			while($row = mysqli_fetch_row($result)) {
 				/*$counter = $row[3];
 				if ($counter == 1) {
 					$counter = 0;
@@ -64,7 +65,7 @@ function getUserTasks($userid) {
 	$query = "SELECT task_id,name,type FROM usertask LEFT JOIN task ON usertask.task_id=task.id WHERE user_id='$userid'";
 	$result = safe_query($query);
 	$hash = array();	
-	while ($row = mysql_fetch_row($result)) {
+	while ($row = mysqli_fetch_row($result)) {
 		$hash[$row[0]] = array($row[1], $row[2]);
 	}
 	return $hash;
@@ -73,8 +74,8 @@ function getUserTasks($userid) {
 function getUserInfo($userid) {
 	$query ="SELECT * FROM user WHERE id='$userid'";
 	$result = safe_query($query);
-	if (mysql_num_rows($result) == 1) {
-		return mysql_fetch_array($result);
+	if (mysqli_num_rows($result) == 1) {
+		return mysqli_fetch_array($result);
 	}
 	return array();
 }
@@ -103,8 +104,8 @@ function removeUser($userid) {
 function getTaskInfo($taskid) {
 	$query ="SELECT * FROM task WHERE id='$taskid'";
 	$result = safe_query($query);
-	if (mysql_num_rows($result) == 1) {
-		return mysql_fetch_array($result);
+	if (mysqli_num_rows($result) == 1) {
+		return mysqli_fetch_array($result);
 	}
 	return array();
 }
@@ -163,8 +164,8 @@ function getAnnotationTaskStats() {
 	
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_row($result)) {
 			$hash[$row[0]] = $row[1];
 		}
 	}
@@ -175,7 +176,7 @@ function getAnnotationTaskStats() {
 function isAnnotatedTask ($taskid) {
 	$query="select distinct sentence_num,user_id from annotation left join sentence on annotation.sentence_num=sentence.num WHERE task_id=$taskid";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
+	if (mysqli_num_rows($result) > 0) {
 		return 1;
 	}
 	return 0;
@@ -186,8 +187,8 @@ function getDoneTaskStats() {
 	
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_row($result)) {
 			$hash[$row[0]] = $row[1];
 		}
 	}
@@ -199,8 +200,8 @@ function getDoneUserStats() {
 	
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_row($result)) {
 			$hash[$row[0]] = $row[1];
 		}
 	}
@@ -216,8 +217,8 @@ function getUserLastAnnotations($user_id, $limit = 2) {
 	
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_row($result)) {
 			$hash[$row[0]] = array($row[1], $row[2]);
 		}
 	}
@@ -228,7 +229,7 @@ function getUserLastDone($user_id) {
 	$query = "SELECT count(lasttime), max(lasttime) from done where user_id=$user_id order by lasttime desc";
 	
 	$result = safe_query($query);	
-	return mysql_fetch_row($result);
+	return mysqli_fetch_row($result);
 }
 
 # get sentence mapping between the source ID and the internal MySQL one
@@ -236,8 +237,8 @@ function getSourceSentenceIdMapping($task_id) {
 	$query = "SELECT id,num FROM sentence WHERE task_id=$task_id AND type='source'";
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_row($result)) {
 			$hash[$row[0]] = $row[1];
 		}
 	}
@@ -250,8 +251,8 @@ function getSentence($num, $taskid) {
 	$query = "SELECT type,lang,text,tokenization FROM sentence WHERE (num='$num' OR (linkto='$num' AND type='reference')) AND task_id='$taskid';";
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_array($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_array($result)) {
 			$hash[$row["type"]] = array($row["lang"],$row["text"], $row["tokenization"]);
 		}
 	}
@@ -262,9 +263,9 @@ function getSentence($num, $taskid) {
 function getQuality($sentence_num,$output_id,$user_id) {
 	$query = "SELECT eval FROM annotation WHERE sentence_num='$sentence_num' AND output_id='$output_id' AND user_id=$user_id;";
 	$result = safe_query($query);	
-	#print mysql_num_rows($result)  . " -- ".$query;
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_array($result);
+	#print mysqli_num_rows($result)  . " -- ".$query;
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_array($result);
 		return $row["eval"];
 	}
 	return -1;
@@ -274,10 +275,10 @@ function getQuality($sentence_num,$output_id,$user_id) {
 function getErrors($sentence_num,$output_id,$user_id) {
 	$query = "SELECT eval,evalids,evaltext FROM annotation WHERE sentence_num=$sentence_num AND output_id=$output_id AND user_id=$user_id order by eval;";
 	$result = safe_query($query);	
-	//print mysql_num_rows($result)  . " -- ".$query;
+	//print mysqli_num_rows($result)  . " -- ".$query;
 	$hash_error = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_array($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_array($result)) {
 			$hash_error[$row["eval"]] = array($row["evalids"],$row["evaltext"]);
 		}
 	}
@@ -288,9 +289,9 @@ function getErrors($sentence_num,$output_id,$user_id) {
 function countAnnotations($sentence_num,$output_id,$user_id) {
 	$query = "SELECT LENGTH(evalids) - LENGTH(REPLACE(evalids,',',''))+1 FROM annotation WHERE sentence_num=$sentence_num AND output_id=$output_id AND user_id=$user_id order by eval;";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
+	if (mysqli_num_rows($result) > 0) {
 		$sum=0;
-		while ($row = mysql_fetch_row($result)) {
+		while ($row = mysqli_fetch_row($result)) {
 			$sum += $row[0];
 		} 
 		return $sum;
@@ -304,15 +305,16 @@ function countAnnotatedSentences($sentence_num,$user_id = null) {
 	if ($user_id != null) {
 		$query .= " AND user_id=$user_id;";
 	}
-	return mysql_num_rows(safe_query($query));
+	return mysqli_num_rows(safe_query($query));
 }
 	
 function getUsedValues ($taskid) {
+	include("config.php");
 	$values = array();
 	$query = "SELECT DISTINCT eval FROM annotation LEFT JOIN sentence ON annotation.sentence_num=sentence.num WHERE task_id=$taskid";
-	$result = mysql_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_row($result)) {
+	$result = mysqli_query($db,$query);	
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_row($result)) {
 			array_push($values, $row[0]);
 		}
 	}
@@ -322,8 +324,8 @@ function getUsedValues ($taskid) {
 #duplicate annotations: copy the annotations from taskid and fromuserid to the current userid (=curruserid)
 function copyAnnotations ($curruserid, $taskid, $fromuserid) {
 	$query="INSERT INTO annotation SELECT sentence_num, output_id, $curruserid, eval, evalids, evaltext, now() FROM annotation LEFT JOIN sentence ON annotation.sentence_num=sentence.num WHERE user_id=$fromuserid AND task_id=$taskid";
-	mysql_query($query) or print ("ERROR! Records copying failed. (" . mysql_error() .")");	
-	return mysql_affected_rows();
+	mysqli_query($db,$query) or print ("ERROR! Records copying failed. (" . mysqli_error() .")");	
+	return mysqli_affected_rows($db);
 }
 	
 function getAnnotatedTasks ($userid) { 
@@ -331,8 +333,8 @@ function getAnnotatedTasks ($userid) {
 	#$query="select distinct task_id, count(*) from annotation left join sentence on annotation.sentence_num=sentence.num where user_id=$userid group by task_id";
 	$query="SELECT task_id,sum(LENGTH(evalids) - LENGTH(REPLACE(evalids, ',', ''))+1) FROM annotation LEFT JOIN sentence ON annotation.sentence_num=sentence.num WHERE user_id=$userid group by task_id";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_row($result)) {
 			if (!empty($row[0])) {
 				$hash[$row[0]] = $row[1];
 			}
@@ -346,8 +348,8 @@ function getTaskAndUsers ($user_id) {
 	$hash = array();
 	$query="select distinct task_id,user_id from annotation,sentence where annotation.sentence_num=sentence.num and user_id != $user_id order by task_id, user_id";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_array($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_array($result)) {
 			if (array_key_exists($row["task_id"], $hash)) {
 				$hash[$row["task_id"]] .= " " .$row["user_id"];
 			} else {
@@ -365,8 +367,8 @@ function getTaskAndUserAnnotation () {
 	$hash = array();
 	$query="select concat(task_id,'-',user_id) as tu, count(*) as count from annotation, sentence where annotation.sentence_num=sentence.num group by tu order by tu";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_array($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_array($result)) {
 			$hash[$row["tu"]] = $row["count"];
 		}
 	}
@@ -396,9 +398,9 @@ function saveQuality($source_id,$output_id,$user_id,$eval,$action="") {
 function removeError($id,$targetid,$user_id,$eval,$item) {
 	$query = "SELECT evalids,evaltext FROM annotation WHERE sentence_num=$id AND output_id='$targetid' AND user_id=$user_id AND eval=$eval";
 	$result = safe_query($query);	
-	//print mysql_num_rows($result)  . " -- ".$query;
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_row($result);
+	//print mysqli_num_rows($result)  . " -- ".$query;
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_row($result);
 		
 		$ids = explode(",",$row[0]);
 		$texts = explode("__BR__",$row[1]);
@@ -520,8 +522,8 @@ function saveComment($sentence_num,$user_id,$comment) {
 function getComment($sentence_num,$user_id) {
 	$query = "SELECT comment FROM comment WHERE sentence_num=$sentence_num AND user_id=$user_id;";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_row($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_row($result);
 		return $row[0];
 	}
 	return "";
@@ -531,8 +533,8 @@ function getComments($taskid, $user_id) {
 	$hash = array();
 	$query = "SELECT sentence_num,id,type,comment FROM comment LEFT JOIN sentence ON sentence_num=sentence.num WHERE task_id=$taskid AND comment.user_id=$user_id";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_array($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_array($result)) {
 			$hash[$row["sentence_num"]] = $row["id"]."\t".$row["type"]."\t".$row["comment"];
 		}
 	}
@@ -543,8 +545,8 @@ function getComments($taskid, $user_id) {
 function isDone($sentence_num,$user_id) {
 	$query = "SELECT completed FROM done WHERE sentence_num=$sentence_num AND user_id=$user_id;";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_row($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_row($result);
 		if ($row[0] == "Y") {
 			return 1;
 		} else {
@@ -570,8 +572,8 @@ function getSystemSentences($id,$taskid) {
 	$query = "SELECT num,lang,text,tokenization FROM sentence WHERE linkto='$id' AND task_id=$taskid AND type != 'reference' order by type";
 	$result = safe_query($query);
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_array($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_array($result)) {
 			$hash[$row["num"]] = array($row["lang"], $row["text"], $row["tokenization"]);
 		}
 	}
@@ -588,8 +590,8 @@ function getSystemSentences($id,$taskid) {
 function getOutputSentence($sourceId, $type) {
 	$query = "SELECT num from sentence where linkto='".$sourceId. "' and type='".$type ."'";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_row($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_row($result);
 		return $row[0];
 	}
 	return -1;
@@ -600,8 +602,8 @@ function getSourceSentences($taskid) {
 	$query = "SELECT num,lang,text,id FROM sentence WHERE task_id='$taskid' AND linkto is null order by num;";
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_row($result)) {
 			$hash[$row[0]] = array($row[1],$row[2],$row[3]);
         }
 	}
@@ -613,8 +615,8 @@ function getDoneSentences($taskid,$userid) {
 	$query = "SELECT sentence_num FROM done LEFT JOIN sentence on done.sentence_num=sentence.num WHERE done.user_id=$userid AND sentence.task_id=$taskid AND completed ='Y'";
 	$result = safe_query($query);	
 	$arr = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_row($result)) {
 			array_push($arr, $row[0]);
 		}
 	}
@@ -627,8 +629,8 @@ function getErrorSentences($taskid) {
 	$query = "SELECT linkto FROM sentence WHERE text LIKE '% %' AND task_id=$taskid";
 	$result = safe_query($query);	
 	$arr = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_row($result)) {
 			array_push($arr, $row[0]);
 		}
 	}
@@ -640,8 +642,8 @@ function countTaskSentences ($taskid) {
 	$query="SELECT type,count(*) as num FROM sentence WHERE task_id=$taskid group by type order by type;";
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_array($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_array($result)) {
 			$hash[$row["type"]] = $row["num"];
 		}
 	}
@@ -656,7 +658,7 @@ function countTaskSystem ($taskid) {
 		} else {
 			$query="SELECT distinct type FROM sentence WHERE task_id=$taskid AND type != 'source' AND type != 'reference';";
 			$result = safe_query($query);	
-			return mysql_num_rows($result);
+			return mysqli_num_rows($result);
 		}
 	}
 	return 0;
@@ -667,8 +669,8 @@ function getSentenceType () {
 	$query="SELECT distinct type FROM sentence ORDER BY type";
 	$result = safe_query($query);	
 	$arr = array();
-	if (mysql_num_rows($result) > 0) {
-		while($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while($row = mysqli_fetch_row($result)) {
 			array_push($arr, $row[0]);
 		}
 	}
@@ -679,8 +681,8 @@ function getSentenceType () {
 function getTaskID($taskname) {
 	$query = "SELECT id FROM task WHERE name='$taskname';";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_row($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_row($result);
 		return $row[0];
 	}
 	return 0;
@@ -702,8 +704,8 @@ function rangesJson2Array($ranges) {
 function getTaskType($taskid) {
 	$query = "SELECT type FROM task WHERE id=$taskid;";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_row($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_row($result);
 		return $row[0];
 	}
 	return "";
@@ -713,8 +715,8 @@ function getTaskType($taskid) {
 function getTaskName($taskid) {
 	$query = "SELECT name FROM task WHERE id=$taskid;";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_row($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_row($result);
 		return $row[0];
 	}
 	return "";
@@ -730,8 +732,8 @@ function getTasks($userid) {
 		if (intval($userid) == 0) {
 			$query = "SELECT id,name,type FROM task ORDER BY type, name";
 			$result = safe_query($query);	
-			if (mysql_num_rows($result) > 0) {
-				while ($row = mysql_fetch_row($result)) {
+			if (mysqli_num_rows($result) > 0) {
+				while ($row = mysqli_fetch_row($result)) {
 					#print $row[0] ."= array(".$row[1].", ".$row[2].")<br>";
 					$count=0;
 					if (isset($annotationCount[$row[0]])) {
@@ -745,7 +747,7 @@ function getTasks($userid) {
 		} else { 
 			$query = "SELECT id,name,type FROM task LEFT JOIN usertask ON task.id=usertask.task_id WHERE user_id='$userid' OR owner='$userid' order by type, name";
 			$result = safe_query($query);	
-			while ($row = mysql_fetch_row($result)) {
+			while ($row = mysqli_fetch_row($result)) {
 				$count=0;
 				if (isset($annotationCount[$row[0]])) {
 					$count = $annotationCount[$row[0]];	
@@ -757,7 +759,7 @@ function getTasks($userid) {
 			//add also own task
 			//$query = "SELECT id,name,type FROM task WHERE owner='$userid'";
 			//$result = safe_query($query);	
-			//while ($row = mysql_fetch_row($result)) {
+			//while ($row = mysqli_fetch_row($result)) {
 			//	$hash[$row[0]] = array($row[1], $row[2]);
 			//}	
 		}	
@@ -884,8 +886,8 @@ function getSystems() {
 	$query = "SELECT DISTINCT type FROM sentence";
 	$result = safe_query($query);	
 	$hash = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($row = mysql_fetch_row($result)) {
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_row($result)) {
 			array_push($hash, $row[0]);
 		}
 	}
@@ -895,8 +897,8 @@ function getSystems() {
 #delete the annotations from a task and user
 function deleteAnnotations ($taskid,$userid) {	
 	$query="DELETE annotation from annotation LEFT JOIN sentence on annotation.sentence_num=sentence.num where user_id=$userid and task_id=$taskid";
-	mysql_query($query) or print ("ERROR! Annotations deleting failed. (" . mysql_error() .")");	
-	$deleted = mysql_affected_rows();
+	mysqli_query($db,$query) or print ("ERROR! Annotations deleting failed. (" . mysqli_error() .")");	
+	$deleted = mysql_affected_rows($db);
 	
 	#delete done records
 	$query="DELETE done from done LEFT JOIN sentence on done.sentence_num=sentence.num where user_id=$userid and task_id=$taskid";
@@ -920,10 +922,10 @@ function deleteSentences($taskid,$type) {
 function getCheckAndDone($userid) {	
 	$query = "select distinct count(*) as count from annotation LEFT JOIN done ON annotation.sentence_num=done.sentence_num AND completed='Y' AND annotation.user_id=done.user_id WHERE done.user_id=$userid group by annotation.sentence_num;";
 	$result = safe_query($query);	
-	if (mysql_num_rows($result) > 1) {
+	if (mysqli_num_rows($result) > 1) {
 		return 0;
 	} else {
-		if (mysql_num_rows($result) == 0) {
+		if (mysqli_num_rows($result) == 0) {
 			return -1;
 		}
 	}
@@ -937,12 +939,12 @@ function getDBInconsistency($userid, $tasks) {
 	//get annotation about removed sentences (TODO REMOVE THIS PATCH ASAP!!) 
 	$query = "select output_id from annotation left join sentence on annotation.output_id=sentence.num where num is null AND user_id=$userid;";
 	$result = safe_query($query);
-	while ($row = mysql_fetch_row($result)) {
+	while ($row = mysqli_fetch_row($result)) {
 		array_push($array_sentencenum, $row[0]);
 	}
 	$query = "select output_id from annotation left join sentence on annotation.sentence_num=sentence.num where num is null AND user_id=$userid;";
 	$result = safe_query($query);
-	while ($row = mysql_fetch_row($result)) {
+	while ($row = mysqli_fetch_row($result)) {
 		array_push($array_sentencenum, $row[0]);
 	}		
 	//end get
@@ -955,14 +957,14 @@ function getDBInconsistency($userid, $tasks) {
 		#if ($tasksyscount > 0) {
 			$query="SELECT count(*) FROM done LEFT JOIN sentence ON done.sentence_num=sentence.num WHERE user_id=$userid AND completed='Y' AND task_id=$taskid;";
 			$result = safe_query($query);
-			$row = mysql_fetch_row($result);
+			$row = mysqli_fetch_row($result);
 			$num_done = $row[0];
 				
 			$query = "SELECT sentence_num,output_id,count(*) AS count FROM annotation LEFT JOIN sentence ON sentence.num=annotation.sentence_num where task_id=$taskid AND user_id=$userid group by sentence_num,output_id order by sentence_num;";
 			$result = safe_query($query);
 			$hash = array();
-			if (mysql_num_rows($result) > 0) {
-				while ($row = mysql_fetch_row($result)) {
+			if (mysqli_num_rows($result) > 0) {
+				while ($row = mysqli_fetch_row($result)) {
 					if (!in_array($row[1], $array_sentencenum)) {
 						if (isset($hash[$row[0]])) {
 							$hash[$row[0]] += 1;
@@ -994,12 +996,12 @@ function getDBInconsistency($userid, $tasks) {
 	$query = "select distinct sentence_num FROM annotation where user_id=$userid";
 	$result_annotation = safe_query($query);
 	$hash = array();
-	while ($row = mysql_fetch_row($result_annotation)) {
+	while ($row = mysqli_fetch_row($result_annotation)) {
 		$hash[$row[0]] = 1;
 	}
 	$query = "select distinct sentence_num,task_id,done.lasttime FROM done LEFT JOIN sentence ON done.sentence_num=sentence.num WHERE user_id=$userid AND completed='Y'";
 	$result_done = safe_query($query);	
-	while ($row = mysql_fetch_row($result_done)) {
+	while ($row = mysqli_fetch_row($result_done)) {
 		if (!isset($hash[$row[0]])) {
 			$hash_error[$row[0]] = array($row[1],$row[2]);
 		} 
@@ -1012,7 +1014,7 @@ function getAnnotationReport ($taskid) {
 	$hash_report = array();
 	$query = "select eval,type,user_id,count(*) from annotation left join sentence on annotation.output_id=sentence.num where task_id=$taskid group by eval,type,user_id order by eval,type,user_id";
 	$result_done = safe_query($query);	
-	while ($row = mysql_fetch_row($result_done)) {
+	while ($row = mysqli_fetch_row($result_done)) {
 		if (isset($hash_report[$row[0]])) {
 			$hash_report[$row[0]] .= ",".$row[1]." ".$row[2]." ".$row[3];
 		} else {
@@ -1067,12 +1069,12 @@ function saveCSVFile ($intDir, $taskid, $userid="") {
 	//count the number of annotators for the current task
 	$query = "select distinct user_id from annotation LEFT JOIN sentence ON annotation.output_id=sentence.num WHERE task_id=$taskid $query_clause";
 	$result_annotators = safe_query($query);
-	$annotators_count = mysql_num_rows($result_annotators);
+	$annotators_count = mysqli_num_rows($result_annotators);
 	#print "TASK: ". $taskid . " ($query) annotations:".$annotators_count."<br>";
 		
 	if ($annotators_count > 0) {					
 		//loop on users
-		while ($row = mysql_fetch_row($result_annotators)) {
+		while ($row = mysqli_fetch_row($result_annotators)) {
 			$userid=$row[0];
 			$sentence_done = getDoneSentences($taskid,$userid);
 			$filecsv = $intDir.$taskname."_ann".$userid.".csv";
@@ -1110,10 +1112,10 @@ function saveCSVFile ($intDir, $taskid, $userid="") {
 			$query = "SELECT output_id,id,type,eval,evalids,sentence_num,lang,text,tokenization FROM annotation LEFT JOIN sentence ON annotation.output_id=sentence.num WHERE user_id=".$userid." AND task_id=".$taskid." order by id;";
 				
 			$result_annotation = safe_query($query);
-			saveLog($taskid . " " . $taskname . " " . mysql_num_rows($result_annotation) . " " . $query);
+			saveLog($taskid . " " . $taskname . " " . mysqli_num_rows($result_annotation) . " " . $query);
 			$last_id = "";
 			$src_text="";
-			while ($row_annotation = mysql_fetch_row($result_annotation)) {
+			while ($row_annotation = mysqli_fetch_row($result_annotation)) {
 				if (in_array($row_annotation[5],$sentence_done)) {
 					if ($last_id != $row_annotation[1]) {
 						$last_id = $row_annotation[1];
@@ -1121,7 +1123,7 @@ function saveCSVFile ($intDir, $taskid, $userid="") {
 						#get source data
 						$query = "SELECT lang,text,tokenization FROM sentence WHERE task_id=$taskid AND id='".$row_annotation[1]."' AND type='source'";
 						$result_source = safe_query($query);
-						$row_source = mysql_fetch_row($result_source);
+						$row_source = mysqli_fetch_row($result_source);
 						
 						$src_text = preg_replace("/[\n|\r]/","",preg_replace("/\t+/"," ",$row_source[1]));
 					}
@@ -1187,7 +1189,7 @@ function saveCSVFile ($intDir, $taskid, $userid="") {
 				}
 			}
 			fclose($fh); 
-			saveLog("SAVED FILE $filecsv: $count_ann $annotators_count $taskname " . mysql_num_rows($result_annotation));
+			saveLog("SAVED FILE $filecsv: $count_ann $annotators_count $taskname " . mysqli_num_rows($result_annotation));
 			if ($count_ann == 0) {
 				unlink($filecsv);
 			}
@@ -1211,12 +1213,12 @@ function saveXMLFile ($intDir, $taskid, $userid="") {
 	//count the number of annotators for the current task
 	$query = "select distinct user_id from annotation LEFT JOIN sentence ON annotation.output_id=sentence.num WHERE task_id=$taskid $query_clause";
 	$result_annotators = safe_query($query);
-	$annotators_count = mysql_num_rows($result_annotators);
+	$annotators_count = mysqli_num_rows($result_annotators);
 	#print "TASK: ". $taskid . " ($query) annotations:".$annotators_count."<br>";
 		
 	if ($annotators_count > 0) {
 		//loop on users
-		while ($row = mysql_fetch_row($result_annotators)) {
+		while ($row = mysqli_fetch_row($result_annotators)) {
 			$userid=$row[0];
 			$sentence_done = getDoneSentences($taskid,$userid);
 			
@@ -1229,7 +1231,7 @@ function saveXMLFile ($intDir, $taskid, $userid="") {
 			
 			$query = "SELECT output_id,id,type,eval,evalids,sentence_num,lang,text,tokenization FROM annotation LEFT JOIN sentence ON annotation.output_id=sentence.num WHERE user_id=".$userid." AND task_id=".$taskid." order by id,type,eval;";
 			$result_annotation = safe_query($query);
-			saveLog($taskid . " " . $taskname . " " . mysql_num_rows($result_annotation) . " " . $query);
+			saveLog($taskid . " " . $taskname . " " . mysqli_num_rows($result_annotation) . " " . $query);
 			$last_id = "";
 			$system_id = "";
 			$tokens=array();
@@ -1238,7 +1240,7 @@ function saveXMLFile ($intDir, $taskid, $userid="") {
 			//get comments
 			$comments = getComments($taskid,$userid);	
 						
-			while ($row_annotation = mysql_fetch_row($result_annotation)) {				
+			while ($row_annotation = mysqli_fetch_row($result_annotation)) {				
 				if (in_array($row_annotation[5],$sentence_done)) {
 					$label = $taskranges[$row_annotation[3]][0];
 			
@@ -1253,7 +1255,7 @@ function saveXMLFile ($intDir, $taskid, $userid="") {
 						#get source data
 						$query = "SELECT lang,text,tokenization FROM sentence WHERE task_id=$taskid AND id='".$row_annotation[1]."' AND type='source'";
 						$result_source = safe_query($query);
-						$row_source = mysql_fetch_row($result_source);
+						$row_source = mysqli_fetch_row($result_source);
 						fwrite($fh," <eval_item ID='".$last_id."' language_pair='".$row_source[0]."_".$row_annotation[6]."'>\n");
 				
 						$src_text = preg_replace("/[\n|\r]/","",preg_replace("/\t+/"," ",$row_source[1]));
@@ -1380,14 +1382,14 @@ function saveXMLFile ($intDir, $taskid, $userid="") {
 				#print $row_annotation[0] ."\t". $row_annotation[1] ."\t". $row_annotation[2] ."\t". $row_annotation[3] ."\n";	
 			}
 						
-			if (mysql_num_rows($result_annotation) > 0 && count($sentence_done) > 0) {
+			if (mysqli_num_rows($result_annotation) > 0 && count($sentence_done) > 0) {
 				fwrite($fh,"    </target>\n");	
 				fwrite($fh,"  </system>\n</eval_item>\n");
 			}
 			fwrite($fh,"</".$tasktype."_task>\n");				
 			fclose($fh); 
 				
-			saveLog("SAVED FILE $filecsv: $count_ann $annotators_count $taskname " . mysql_num_rows($result_annotation));
+			saveLog("SAVED FILE $filecsv: $count_ann $annotators_count $taskname " . mysqli_num_rows($result_annotation));
 			if ($count_ann == 0) {
 				unlink($filecsv);
 			}
@@ -1411,12 +1413,12 @@ function saveIOB2File ($intDir, $taskid, $userid="") {
 	//count the number of annotators for the current task
 	$query = "select distinct user_id from annotation LEFT JOIN sentence ON annotation.output_id=sentence.num WHERE task_id=$taskid $query_clause";
 	$result_annotators = safe_query($query);
-	$annotators_count = mysql_num_rows($result_annotators);
+	$annotators_count = mysqli_num_rows($result_annotators);
 	#print "TASK: ". $taskid . " ($query) annotations:".$annotators_count."<br>";
 		
 	if ($annotators_count > 0) {	
 		//loop on users
-		while ($row = mysql_fetch_row($result_annotators)) {
+		while ($row = mysqli_fetch_row($result_annotators)) {
 			$userid=$row[0];
 			$sentence_done = getDoneSentences($taskid,$userid);
 			$filecsv = $intDir.$taskname."_ann".$userid.".iob2";
@@ -1439,10 +1441,10 @@ function saveIOB2File ($intDir, $taskid, $userid="") {
 			$query = "SELECT output_id,id,type,eval,evalids,sentence_num FROM annotation LEFT JOIN sentence ON annotation.output_id=sentence.num WHERE user_id=".$userid." AND task_id=".$taskid." order by id,type,eval;";
 			$result_annotation = safe_query($query);
 			$last_id="";		
-			$tot_row = mysql_num_rows($result_annotation);
+			$tot_row = mysqli_num_rows($result_annotation);
 			$num_row = 1;
 			$annotatedTokens = array();
-			while ($row_annotation = mysql_fetch_row($result_annotation)) {	
+			while ($row_annotation = mysqli_fetch_row($result_annotation)) {	
 				if ($num_row == $tot_row) {
 					$label = $taskranges[$row_annotation[3]][0];
 					$evalitems = preg_split("/,/", $row_annotation[4]);
@@ -1471,7 +1473,7 @@ function saveIOB2File ($intDir, $taskid, $userid="") {
 						#get source data
 						$query = "SELECT lang,text,tokenization FROM sentence WHERE task_id=$taskid AND id='".$last_id."' AND type='source'";
 						$result_source = safe_query($query);
-						$row_source = mysql_fetch_row($result_source);
+						$row_source = mysqli_fetch_row($result_source);
 				
 						$tokens = getTokens($row_source[0], $row_source[1], $row_source[2]);	
 						fwrite($fh, "# FILE: ".$last_id."\n");
@@ -2040,7 +2042,10 @@ function saveLog($line) {
 }
 
 #generic function for Mysql query
-function safe_query ($query = "") {
+function safe_query ($query = "", $sameDb = null) {
+	include("config.php");
+	if($sameDb !== null)
+		$db=$sameDb;
     global $mysession;
     if (empty($query)) {
 		return FALSE;
@@ -2049,15 +2054,15 @@ function safe_query ($query = "") {
     if (QUERY_LOG == "yes" && substr(strtolower(trim($query)),0, 6) != "select") {
 		$querylog = addslashes($query);
     	$querylog = "INSERT INTO log (user_id, query, error, lasttime) VALUES (".$mysession['userid'].",\"$querylog\",\"$errorno\",now());";
-		mysql_query($querylog) or die ("Error! " . mysql_error());
+		mysqli_query($db,$querylog) or die ("Error! " . mysqli_error());
     }    
     	
-    $result = mysql_query($query) or $errorno= mysql_errno();
+    $result = mysqli_query($db,$query) or $errorno= mysqli_errno();
     if ($errorno != 0) {
 		if (QUERY_DEBUG == "no") {
 		    print ("<BR>Query failed: please contact the webmaster " . SYSADMIN . ".");
 		} else {
-			$error = mysql_error();	
+			$error = mysqli_error();	
 	    	print ("</td></tr></table></td></tr></table><BR>Query failed:" 
 					      . "<li> errorno=" . $errorno
 					      . "<li> error=" . $error

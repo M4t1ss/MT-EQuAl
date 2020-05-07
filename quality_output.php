@@ -32,7 +32,7 @@ $prevAndnextIDs = getPrevNext($taskid, $id);
 if (!isset($sentidx) && $sentidx != -1) {
  	$sentidx = $prevAndnextIDs[2];
 }
-print "<div class=donebottom>";
+print "<div class=donebottom style='bottom:20px;'>";
 $prevpage = "quality.php?id=".$prevAndnextIDs[0]."&taskid=$taskid&sentidx=".($sentidx-1);
 $nextpage = "quality.php?id=".$prevAndnextIDs[1]."&taskid=$taskid&sentidx=".($sentidx+1);
 print "<button id=prev name=prev onclick=\"javascript:next('$prevpage');\">&nbsp;« prev&nbsp;</button> &nbsp;";

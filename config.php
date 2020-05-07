@@ -54,17 +54,17 @@ if (DEBUG == "yes") {
 
 
 # db connection	
-$db = @mysql_pconnect(DB_HOST,DB_USER,DB_PASSWORD) or die("<center><br><h3>Fatal Error: unable to connect to the MT-EQuAl database server (attempted on ". DB_HOST . ").<br>Please contact ".SYSADMIN.".</h3></center>");  
+// $db = @mysqli_connect("p:".DB_HOST,DB_USER,DB_PASSWORD);  
     
-if (!mysql_ping ($db)) {
-	//here is the major trick, you have to close the connection (even though its not currently working) for it to recreate properly.
-	mysql_close($db);
-	$db = mysql_connect(DB_HOST,DB_USER,DB_PASSWORD) or die("Error: cannot connect to " . DB_HOST);
-}
-if ( !@mysql_select_db(DB_NAME,$db) ) {
+// if (!mysqli_ping ($db)) {
+	// //here is the major trick, you have to close the connection (even though its not currently working) for it to recreate properly.
+	// mysqli_close($db);
+	$db = mysqli_connect(DB_HOST,DB_USER,DB_PASSWORD) or die("Error: cannot connect to " . DB_HOST);
+// }
+if ( !@mysqli_select_db($db,DB_NAME) ) {
 	#echo "<p>Unable to find the ".DB_NAME." database on ".DB_HOST.". Please contact ".SYSADMIN.".<p>";
 	echo "<p>Unable to find the MT-EQuAl database. Please contact ".SYSADMIN.".<p>";
-    #echo mysql_errno($db) . ": " . mysql_error($db). "\n";
+    #echo mysqli_errno($db) . ": " . mysqli_error($db). "\n";
 	exit();
 }  
 

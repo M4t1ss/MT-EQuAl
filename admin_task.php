@@ -288,9 +288,10 @@ if ($mysession["status"] == "root" || $mysession["status"] == "admin" || $mysess
 			
 			if ($id == -1) {
 				if ($taskinfo["name"] != "" && $taskinfo["type"] != "") {
-					$res = safe_query("INSERT INTO task (name,owner) VALUES ('_NEW_','".$mysession['userid']."');");
+					include("config.php");
+					$res = safe_query("INSERT INTO task (name,owner) VALUES ('_NEW_','".$mysession['userid']."');", $db);
 					if ($res == 1) {
-						$id = mysql_insert_id();
+						$id = mysqli_insert_id($db);
 					}
 				} else {
 					if ($taskinfo["type"] == "") {
